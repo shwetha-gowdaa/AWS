@@ -1,0 +1,99 @@
+ AWS Load Balancer Demo
+
+This guide demonstrates how to set up a basic load balancer in AWS with two EC2 instances running Nginx. 
+Prerequisites
+- AWS Account
+- Basic understanding of AWS services (EC2, Load Balancers)
+
+
+Steps
+
+1. Create Two EC2 Instances
+
+    a. Log in to the AWS Management Console.
+
+    b. Navigate to the EC2 Dashboard and click "Launch Instance".
+
+    c. Choose an Amazon Machine Image (AMI) (e.g., Amazon Linux 2 AMI).
+
+    d. Select an instance type (e.g., t2.micro).
+
+    e. Configure the instance details (default settings are fine for this demo).
+
+    f. Add storage (default settings are fine).
+
+    g. Add tags (optional).
+
+    h. Configure Security Group:
+        - Allow HTTP traffic on port 80.
+        - Allow SSH traffic on port 22 (for instance management).
+
+    i. Review and launch the instances, creating a new key pair or using an existing one for SSH access.
+
+2. Configure the Instances
+
+    a. SSH into each EC2 instance:
+  
+    ssh -i path_to_your_key_pair.pem ec2-user@your_instance_public_ip
+    
+
+    b. Install Nginx:
+    
+    sudo yum update -y
+    sudo yum install nginx
+    sudo systemctl start nginx
+    sudo systemctl enable nginx
+    
+
+    c. Customize the Nginx welcome page to identify the instance:
+    
+    echo "Welcome to Instance 1" | sudo vim /usr/share/nginx/html/index.html
+    
+    Repeat the steps above for the second instance, changing the welcome message to "Welcome to Instance 2".
+
+3. Create a Target Group
+
+    a. Navigate to the EC2 Dashboard and click "Target Groups" under "Load Balancing".
+
+    b. Click "Create target group".
+
+    c. Choose "Instances" as the target type, and configure the following:
+        - Name: my-target-group
+        - Protocol: HTTP
+        - Port: 80
+        - VPC: Select the VPC where your instances are located
+
+    d. Click "Next" and register the two instances you created earlier as targets.
+
+4. Create a Load Balancer
+
+    a. Navigate to the EC2 Dashboard and click "Load Balancers" under "Load Balancing".
+
+    b. Click "Create Load Balancer" and select "Application Load Balancer".
+
+    c. Configure the load balancer settings:
+        - Name: my-load-balancer
+        - Scheme: Internet-facing
+        - IP address type: IPv4
+        - Listeners: HTTP on port 80
+
+    d. Configure the security group to allow HTTP traffic on port 80.
+
+    e. Configure the target group by selecting the one created earlier (my-target-group).
+
+    f. Click "Create Load Balancer".
+
+5. Test the Setup
+
+    a. Once the load balancer is created, navigate to the "Load Balancers" section and copy the DNS name of your new load balancer.
+
+    b. Open a web browser and paste the DNS name. You should see the welcome messages from both instances alternately as the load balancer distributes the requests.
+
+ Conclusion
+
+This demo provides a basic understanding of how to set up and test a load balancer in AWS with two EC2 instances running Nginx. This setup can be further expanded and customized based on specific requirements.
+
+
+
+
+Feel free to copy and adjust the content to fit your needs before posting it on GitHub!
